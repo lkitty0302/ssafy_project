@@ -1,0 +1,51 @@
+pragma solidity 0.5.2;
+
+contract EscrowTest{
+    
+    uint public value;
+    address payable public seller;
+    address payable public buyer;
+    string public message;
+    enum State {Created, Locked, Sent, Complete}
+    State public state;
+    
+    mapping(address=> uint) balanceOf;
+    
+    function registrItem(uint amount)public{
+        seller = msg.sender;
+        value = amount;
+        
+        state = State.Created;
+    }
+    
+    function buyItem() payable public{
+        require(msg.value == value);
+        buyer = msg.sender;
+        balanceOf[seller] += value;
+        
+        state = State.Locked;
+    }
+    
+    function refund() public{
+        require(state == State.Locked);
+        balanceOf[seller] -= value;
+        selfdestruct(buyer);
+        
+        state = State.Created;
+    }
+    
+    function confirmItem() public{
+        require(buyer == msg.sender);
+        require(state == State.Sent);
+        selfdestruct(seller);
+        
+        state = State.Complete;
+    }
+    
+    function sendItem() public{
+        require(seller == msg.sender);
+        require(state == State.Locked);
+        
+        state = State.Sent;
+    }
+}
