@@ -1,0 +1,18 @@
+pragma solidity 0.5.2;
+
+contract SimpleStorage{
+    
+    uint256 value;
+    
+    constructor() public{
+        value = 0;
+    }
+    
+    function setValue(uint256 _value) public{
+        value = _value;
+    }
+    
+    function getValue() public view returns (uint256){
+        return value;
+    }
+}
